@@ -1,0 +1,8 @@
+CHANGELOG
+LICENSE
+Manifest
+README
+Rakefile
+lib/openship.rb
+lib/openship/openship.rb
+lib/openship/sscc.rb
