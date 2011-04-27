@@ -4,5 +4,8 @@ Manifest
 README
 Rakefile
 lib/openship.rb
+lib/openship/label.rb
 lib/openship/openship.rb
 lib/openship/sscc.rb
+spec/openship/sscc_spec.rb
+spec/spec_helper.rb
