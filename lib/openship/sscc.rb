@@ -3,6 +3,7 @@ module OpenShip
   class Sscc
 
     @company_prefix
+    @extension_digit = "1"
 
     def self.company_prefix
       @company_prefix
@@ -10,6 +11,14 @@ module OpenShip
 
     def self.company_prefix=(prefix)
       @company_prefix=prefix
+    end
+
+    def self.extension_digit
+      @extension_digit
+    end
+
+    def self.extension_digit=(digit)
+      @extension_digit = digit
     end
 
     def self.generate_check_digit(string_sequence)
@@ -35,6 +44,18 @@ module OpenShip
       number2 = array2.inject(:+)
       number3 = number1 + number2
       check_digit = (10 - (number3 % 10)).to_s
+    end
+
+    def self.generate_sscc_id(serial_reference)
+      if company_prefix.nil?
+        raise "Company prefix cannot be nil. Set with OpenShip::Sscc.company_prefix"
+      end
+      while ((@company_prefix.length + serial_reference.length) < 16)
+        serial_reference = "0" + serial_reference
+      end
+      sequence = @extension_digit + @company_prefix + serial_reference
+      check_digit = self.generate_check_digit(sequence)
+      sscc = sequence + check_digit
     end
 
     
