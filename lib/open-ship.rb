@@ -4,6 +4,6 @@ module OpenShip
   
 end
 
-require 'openship'
-require 'openship/sscc'
+require 'open-ship'
+require 'open-ship/sscc'
 
