@@ -10,6 +10,9 @@ module OpenShip
     end
 
     def self.company_prefix=(prefix)
+      if !prefix.start_with? "0"
+        raise "Company prefix should have a leading zero."
+      end
       @company_prefix=prefix
     end
 
