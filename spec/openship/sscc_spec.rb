@@ -3,8 +3,8 @@ require 'spec_helper'
 describe OpenShip::Sscc do 
 
   it "Should persist a company prefix on the model" do
-    OpenShip::Sscc.company_prefix = "801234"
-    OpenShip::Sscc.company_prefix.should == "801234"
+    OpenShip::Sscc.company_prefix = "0801234"
+    OpenShip::Sscc.company_prefix.should == "0801234"
   end
 
   it "should generate a valid check digit for a given sscc id" do
