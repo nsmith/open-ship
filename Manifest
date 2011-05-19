@@ -6,8 +6,11 @@ Rakefile
 lib/open-ship.rb
 lib/open-ship/label.rb
 lib/open-ship/label/carton_label.rb
+lib/open-ship/label/text_label.rb
 lib/open-ship/sscc.rb
 spec/open-ship/label/carton_label_spec.rb
+spec/open-ship/label/text_label_spec.rb
 spec/open-ship/sscc_spec.rb
 spec/spec_helper.rb
 tmp/test_carton_label.pdf
+tmp/test_text_label.pdf
