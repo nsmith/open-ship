@@ -35,7 +35,7 @@ module OpenShip
         document.text_box(quantity_line, :size => 16, :align => :left, :at => [0.2.cm, 5.cm], :width => 12.cm, :height => 0.75.cm)
 
         total_cartons_line = "Total Master Pk. Cartons per Line Item: #{self.total_cartons}"
-        document.text_box(total_cartons_line, :size => 16, :align => :left, :at => [0.2.cm, 4.25.cm], :width => 12.cm, :height => 0.75.cm)
+        document.text_box(total_cartons_line, :size => 16, :align => :left, :at => [0.2.cm, 4.25.cm], :width => 15.cm, :height => 0.75.cm)
 
 
         document.text_box("Pre-Priced: NO", :size => 20, :align => :left, :at => [0.2.cm, 3.cm], :width => 12.cm, :height => 1.cm)
