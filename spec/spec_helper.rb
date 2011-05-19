@@ -1,6 +1,6 @@
 require 'spec/autorun'
 
-require 'openship'
+require 'open-ship'
 
 Spec::Runner.configure do |config|
 

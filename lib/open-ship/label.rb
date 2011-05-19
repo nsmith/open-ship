@@ -1,6 +1,6 @@
 module OpenShip
 
-  class Label
+  module Label
 
   end
 
