@@ -1,3 +1,6 @@
+require "gga4r"
+require "activesupport"
+
 module OpenShip
 
   class BoxPosition
@@ -16,7 +19,7 @@ module OpenShip
   end
 
   class Box
-    attr_accessor :length, :width, :height, :label
+    attr_accessor :length, :width, :height, :label, :product_quantity
 
     def volume
       (length * width * height)
@@ -76,7 +79,7 @@ module OpenShip
     end
 
     def free_space
-      self.volume - (self.box_positions.collect { |bp| bp.box }.sum { |bx| bx.volume } + self.margin)
+      self.volume - (self.box_positions.collect { |bp| bp.box }.sum { |bx| bx.volume })
     end
 
     def position_for_box(box)
@@ -95,7 +98,73 @@ module OpenShip
       spot
     end
 
+    def add_box(box)
+      pos = self.position_for_box(box)
+      if pos
+        bp = OpenShip::BoxPosition.new
+        bp.box = box
+        bp.position = pos
+        self.box_positions << bp
+      end
+      pos
+    end
 
+
+
+  end
+
+  class OpenShip::Shipment
+
+    attr_accessor :boxes_to_stores
+    attr_reader :cartons_to_stores
+
+    def initialize()
+      @cartons_to_stores = {}
+      @boxes_to_stores = {}
+    end
+
+    def fitness
+
+      @boxes_to_stores.each { |k, v|
+        @cartons_to_stores[k] ||= []
+        cart = OpenShip::Carton.new
+        v.each { |box|
+          pos = cart.add_box(box)
+          if pos.nil?
+            self.cartons_to_stores[k] << cart
+            cart = OpenShip::Carton.new
+            pos = cart.add_box(box)
+            if pos.nil?
+              raise "Box is too big for carton."
+            end
+          end
+        }
+      }
+
+      total_volume = 0
+      self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_volume += cart.volume }
+
+      total_free = 0
+      self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_free += cart.free_space }
+      (total_volume / (total_free + 0.001))
+    end
+
+
+    def recombine(c2)
+      self.boxes_to_stores.each { |k, v|
+        bxs = c2.boxes_to_stores[k]
+
+        cross_point = (rand * bxs.size).to_i
+        c1_a, c1_b = v.seperate(cross_point)
+        c2_a, c2_b = bxs.seperate(cross_point)
+        self.boxes_to_stores[k] = c1_a + c2_b
+        c2.boxes_to_stores[k] = c2_a + c1_b
+      }
+      [self, c2]
+    end
+
+    def mutate
+    end
 
   end
 

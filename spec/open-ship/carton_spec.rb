@@ -43,6 +43,11 @@ require 'spec_helper'
         @wide_box.length = 7
         @wide_box.height = 5
 
+        @wide_flat_box = OpenShip::Box.new
+        @wide_flat_box.width = 80
+        @wide_flat_box.length = 100
+        @wide_flat_box.height = 5
+
 
         @big_box = OpenShip::Box.new
         @big_box.width = 80
@@ -73,6 +78,9 @@ require 'spec_helper'
         # Check that a really long box is moved down the length of the container."
         new_position = @cart.position_for_box(@wide_box)
         new_position.y.should be > 0
+        # Check that a really wide, flat box will be loaded on top of existing boxes."
+        new_position = @cart.position_for_box(@wide_flat_box)
+        new_position.z.should be > 0
       end
 
       it "should return a nil position for a box that cannot fit." do
@@ -80,6 +88,29 @@ require 'spec_helper'
         @cart.box_positions << @bp
         new_position = @cart.position_for_box(@big_box)
         new_position.should == nil
+      end
+
+      it "should be able to calculate a shipment" do
+        population = []
+        30.times {
+          ship = OpenShip::Shipment.new
+
+          i = 0
+          10.times {
+            ship.boxes_to_stores[i.to_s] = []
+            20.times {
+              box = OpenShip::Box.new
+              box.length = (rand * 10).to_i
+              box.width = (rand * 10).to_i
+              box.height = (rand * 10).to_i
+            }
+            i += 1
+          }
+          population << ship
+        }
+        ga = GeneticAlgorithm.new(population)
+        100.times { |i|  ga.evolve }
+        p ga.best_fit[0]
       end
 
 
