@@ -39,9 +39,9 @@ module OpenShip
       packed = false
       self.box_positions.each { |bp|
         unless packed
-          if ((pos.x >= bp.position.x) && (pos.x < bp.box.width))
-            if ((pos.y >= bp.position.y) && (pos.y < bp.box.length))
-              if ((pos.z >= bp.position.z) && (pos.z < bp.box.height))
+          if ((pos.x >= bp.position.x) && (pos.x < (bp.box.width + bp.position.x)))
+            if ((pos.y >= bp.position.y) && (pos.y < (bp.box.length + bp.position.y)))
+              if ((pos.z >= bp.position.z) && (pos.z < (bp.box.height + bp.position.z)))
                 packed = true
               end
             end
@@ -53,12 +53,12 @@ module OpenShip
 
     def get_space(opts={})
       space = []
-      x_pos = 0
-      while (x_pos < self.width)
+      z_pos = 0
+      while (z_pos < self.height)
         y_pos = 0
         while(y_pos < self.length)
-          z_pos = 0
-          while(z_pos < self.height)
+          x_pos = 0
+          while(x_pos < self.width)
             pos = Position.new
             pos.x = x_pos
             pos.y = y_pos
@@ -66,11 +66,11 @@ module OpenShip
             unless self.space_packed(pos)
               space << pos
             end
-            z_pos += 1
+            x_pos += 1
           end
           y_pos += 1
         end
-        x_pos += 1
+        z_pos += 1
       end
       space
     end
@@ -79,23 +79,23 @@ module OpenShip
       self.volume - (self.box_positions.collect { |bp| bp.box }.sum { |bx| bx.volume } + self.margin)
     end
 
-
-    def get_free_space
-      cube_space = self.get_space
-      self.box_positions.each { |bp|
-        cube_space.each { |cs|
-          puts "Position x: #{cs.x} y: #{cs.y} z: #{cs.z}"
-          if (cs.x < (bp.position.x + bp.box.width))
-            if (cs.y < (bp.position.y + bp.box.length))
-              if (cs.x < (bp.position.z + bp.box.height))
-                cube_space.delete cs
-              end
+    def position_for_box(box)
+      spot = nil
+      free_space = self.get_space
+      free_space.each { |sp|
+        if ((self.width - sp.x) >= box.width)
+          if ((self.length - sp.y) >= box.length)
+            if ((self.height - sp.z) >= box.height)
+              spot = sp
+              break
             end
           end
-        }
+        end
       }
-      cube_space
+      spot
     end
+
+
 
   end
 

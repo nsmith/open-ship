@@ -38,9 +38,9 @@ module OpenShip
         document.text_box(self.gtin[0..7], :size => 16, :align => :left, :at => [2.2.cm, 6.3.cm], :width => 2.cm, :height => 1.cm)
         document.text_box(self.gtin[8..12], :size => 20, :align => :left, :at => [2.2.cm, 5.7.cm], :width => 2.5.cm, :height => 1.5.cm)
 
-        document.text_box(self.product, :size => 12, :align => :right, :at => [7.5.cm, 6.4.cm], :width => 3.cm, :height => 0.5.cm)
-        document.text_box(self.style, :size => 12, :align => :right, :at => [7.5.cm, 5.9.cm], :width => 3.cm, :height => 0.5.cm)
-        document.text_box(self.sku, :size => 12, :align => :right, :at => [7.5.cm, 5.4.cm], :width => 3.cm, :height => 0.5.cm)
+        document.text_box(self.product, :size => 12, :align => :right, :at => [5.5.cm, 6.4.cm], :width => 5.cm, :height => 0.5.cm)
+        document.text_box(self.style, :size => 12, :align => :right, :at => [5.5.cm, 5.9.cm], :width => 5.cm, :height => 0.5.cm)
+        document.text_box(self.sku, :size => 12, :align => :right, :at => [5.5.cm, 5.4.cm], :width => 5.cm, :height => 0.5.cm)
 
         document.text_box(self.origin, :size => 10, :align => :center, :at => [0.cm, 0.75.cm], :width => 11.cm, :height => 0.5.cm)
 
