@@ -5,6 +5,7 @@ module OpenShip
 end
 
 require 'open-ship/sscc'
+require 'open-ship/sortr'
 require 'open-ship/label'
 require 'open-ship/label/carton_label'
 require 'open-ship/label/text_label'

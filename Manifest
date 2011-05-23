@@ -7,7 +7,9 @@ lib/open-ship.rb
 lib/open-ship/label.rb
 lib/open-ship/label/carton_label.rb
 lib/open-ship/label/text_label.rb
+lib/open-ship/sortr.rb
 lib/open-ship/sscc.rb
+spec/open-ship/carton_spec.rb
 spec/open-ship/label/carton_label_spec.rb
 spec/open-ship/label/text_label_spec.rb
 spec/open-ship/sscc_spec.rb
