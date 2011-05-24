@@ -70,6 +70,16 @@ require 'spec_helper'
         
       end
 
+      it "should be able to add boxes" do
+        @cart.box_positions = []
+        @cart.add_box(@box)
+        @cart.add_box(@box2)
+        space = @cart.get_space
+        space.length.should == (@cart.volume - @box.volume - @box2.volume)
+        
+      end
+
+
       it "should be able to return a valid position for a box that can fit in it." do
         @cart.box_positions = []
         @cart.box_positions << @bp
@@ -91,26 +101,46 @@ require 'spec_helper'
       end
 
       it "should be able to calculate a shipment" do
+        log = Logger.new(STDOUT)
+        log.level = Logger::DEBUG
+        
         population = []
-        30.times {
+        boxes_to_stores = {}
+        i = 0
+        2.times {
+          boxes_to_stores[i.to_s] = []
+          25.times {
+            box = OpenShip::Box.new
+            box.length = (rand * 10).to_i
+            box.width = (rand * 20).to_i
+            box.height = (rand * 20).to_i
+            boxes_to_stores[i.to_s] << box
+          }
+          i += 1
+        }
+        5.times {
           ship = OpenShip::Shipment.new
 
-          i = 0
-          10.times {
-            ship.boxes_to_stores[i.to_s] = []
-            20.times {
-              box = OpenShip::Box.new
-              box.length = (rand * 10).to_i
-              box.width = (rand * 10).to_i
-              box.height = (rand * 10).to_i
-            }
-            i += 1
+          ship.boxes_to_stores = boxes_to_stores.clone
+
+          ship.boxes_to_stores.each { |k, v|
+            ship.boxes_to_stores[k] = v.shuffle
           }
           population << ship
         }
-        ga = GeneticAlgorithm.new(population)
-        100.times { |i|  ga.evolve }
-        p ga.best_fit[0]
+        ga = GeneticAlgorithm.new(population, {:logger => log})
+        3.times {  ga.evolve }
+        best_fit = ga.best_fit[0]
+        best_fit.cartons_to_stores.each { |k, v|
+          puts k
+          v.each { |cart|
+            puts "Carton"
+            cart.box_positions.each { |bp|
+              puts "length: " + bp.box.length.to_s + " width: " + bp.box.width.to_s + " height: " + bp.box.height.to_s
+              puts "x: " + bp.position.x.to_s + " y: " + bp.position.y.to_s + " z: " + bp.position.z.to_s
+            }
+          }
+        }
       end
 
 

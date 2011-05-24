@@ -1,7 +1,8 @@
-require "gga4r"
 require "activesupport"
 
 module OpenShip
+  
+
 
   class BoxPosition
     attr_accessor :position, :box
@@ -115,55 +116,86 @@ module OpenShip
 
   class OpenShip::Shipment
 
-    attr_accessor :boxes_to_stores
-    attr_reader :cartons_to_stores
+
+    attr_accessor :boxes_to_stores, :cartons_to_stores
 
     def initialize()
-      @cartons_to_stores = {}
+      @cartons_to_stores = nil
       @boxes_to_stores = {}
     end
 
     def fitness
 
-      @boxes_to_stores.each { |k, v|
-        @cartons_to_stores[k] ||= []
-        cart = OpenShip::Carton.new
-        v.each { |box|
-          pos = cart.add_box(box)
-          if pos.nil?
-            self.cartons_to_stores[k] << cart
-            cart = OpenShip::Carton.new
+      if @cartons_to_stores.nil?
+        @cartons_to_stores = {}
+        self.boxes_to_stores.each { |k, v|
+          @cartons_to_stores[k] ||= []
+          cart = OpenShip::Carton.new
+          puts "New Box"
+          cart.width = 20
+          cart.height = 20
+          cart.length = 10
+          @cartons_to_stores[k] << cart
+          v.each { |box|
             pos = cart.add_box(box)
             if pos.nil?
-              raise "Box is too big for carton."
+              cart = OpenShip::Carton.new
+              puts "New Box"
+              cart.width = 20
+              cart.height = 20
+              cart.length = 10
+              @cartons_to_stores[k] << cart
+              pos = cart.add_box(box)
+              if pos.nil?
+                raise "Box is too big for carton."
+              end
             end
-          end
+          }
         }
-      }
+      end
 
-      total_volume = 0
-      self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_volume += cart.volume }
+      #total_volume = 0
+      #self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_volume += cart.volume }
 
-      total_free = 0
-      self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_free += cart.free_space }
-      (total_volume / (total_free + 0.001))
+      #total_free = 0
+      #self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_free += cart.free_space }
+      #puts "Fitness: " + (total_volume / (total_free + 0.001)).to_s
+      #(total_volume / (total_free + 0.001))
+      free_space = self.cartons_to_stores.sum { |k, v| v.sum { |c| c.free_space } }
+      box_count = self.boxes_to_stores.sum { |k, v| v.count }
+      carton_count = self.cartons_to_stores.sum { |k, v| v.count }
+      puts "Box Count: " + box_count.to_s
+      puts "Carton Free Space: " + free_space.to_s
+      puts "Carton Count: " + carton_count.to_s
+      fitness = (box_count.to_f / carton_count.to_f) / free_space.to_f
+      puts "Fitness " + fitness.to_s
+      fitness
+    end
+
+    def stats
+      ["Total Volume :" + self.boxes_to_stores.sum { |k, v| v.sum { |b| b.volume } }.to_s]
     end
 
 
     def recombine(c2)
+      return1 = self.clone
+      return2 = c2.clone
       self.boxes_to_stores.each { |k, v|
         bxs = c2.boxes_to_stores[k]
 
         cross_point = (rand * bxs.size).to_i
-        c1_a, c1_b = v.seperate(cross_point)
-        c2_a, c2_b = bxs.seperate(cross_point)
-        self.boxes_to_stores[k] = c1_a + c2_b
-        c2.boxes_to_stores[k] = c2_a + c1_b
+        c1_a, c1_b = v.separate(cross_point)
+        c2_a, c2_b = bxs.separate(cross_point)
+        return1.boxes_to_stores[k] = c1_a + c2_b
+        return2.boxes_to_stores[k] = c2_a + c1_b
       }
-      [self, c2]
+      return1.cartons_to_stores = nil
+      return2.cartons_to_stores = nil
+      return1
     end
 
     def mutate
+      self
     end
 
   end
