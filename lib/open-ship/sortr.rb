@@ -93,10 +93,13 @@ module OpenShip
               # Test for potential overlaps
               overlap = false
               self.box_positions.each { |bp|
-                if ( ((bp.position.z + bp.box.height) > sp.z) && ((sp.z + box.height) > bp.position.z) )
-                  if ( ((bp.position.y + bp.box.length) > sp.y) && ((sp.y + box.length) > bp.position.y) )
-                    overlap = true;
-                    break
+
+                if ( ((bp.position.x + bp.box.width) > sp.x) && ((sp.x + box.width) > bp.position.x) )
+                  if ( ((bp.position.z + bp.box.height) > sp.z) && ((sp.z + box.height) > bp.position.z) )
+                    if ( ((bp.position.y + bp.box.length) > sp.y) && ((sp.y + box.length) > bp.position.y) )
+                      overlap = true;
+                      break
+                    end
                   end
                 end
               }
