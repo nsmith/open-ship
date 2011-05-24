@@ -90,8 +90,20 @@ module OpenShip
         if ((self.width - sp.x) >= box.width)
           if ((self.length - sp.y) >= box.length)
             if ((self.height - sp.z) >= box.height)
-              spot = sp
-              break
+              # Test for potential overlaps
+              overlap = false
+              self.box_positions.each { |bp|
+                if ( ((bp.position.z + bp.box.height) > sp.z) && ((sp.z + box.height) > bp.position.z) )
+                  if ( ((bp.position.y + bp.box.length) > sp.y) && ((sp.y + box.length) > bp.position.y) )
+                    overlap = true;
+                    break
+                  end
+                end
+              }
+              unless overlap
+                spot = sp
+                break
+              end
             end
           end
         end
@@ -100,6 +112,9 @@ module OpenShip
     end
 
     def add_box(box)
+      if box.volume > self.free_space
+        return nil
+      end
       pos = self.position_for_box(box)
       if pos
         bp = OpenShip::BoxPosition.new

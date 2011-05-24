@@ -109,16 +109,16 @@ require 'spec_helper'
         i = 0
         2.times {
           boxes_to_stores[i.to_s] = []
-          25.times {
+          20.times {
             box = OpenShip::Box.new
-            box.length = (rand * 10).to_i
-            box.width = (rand * 20).to_i
-            box.height = (rand * 20).to_i
+            box.length = ((rand * 9) + 1).to_i
+            box.width = ((rand * 19) + 1).to_i
+            box.height = ((rand * 19) + 1).to_i
             boxes_to_stores[i.to_s] << box
           }
           i += 1
         }
-        5.times {
+        10.times {
           ship = OpenShip::Shipment.new
 
           ship.boxes_to_stores = boxes_to_stores.clone
@@ -129,7 +129,7 @@ require 'spec_helper'
           population << ship
         }
         ga = GeneticAlgorithm.new(population, {:logger => log})
-        3.times {  ga.evolve }
+        10.times {  ga.evolve }
         best_fit = ga.best_fit[0]
         best_fit.cartons_to_stores.each { |k, v|
           puts k
@@ -139,6 +139,13 @@ require 'spec_helper'
               puts "length: " + bp.box.length.to_s + " width: " + bp.box.width.to_s + " height: " + bp.box.height.to_s
               puts "x: " + bp.position.x.to_s + " y: " + bp.position.y.to_s + " z: " + bp.position.z.to_s
             }
+          }
+        }
+        best_fit.cartons_to_stores.each { |k, v|
+          puts "Test"
+          v.each { |carton|
+            carton.volume.should be > carton.box_positions.sum { |bp| bp.box.volume }
+            carton.get_space.length.should == carton.free_space
           }
         }
       end
