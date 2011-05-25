@@ -134,59 +134,76 @@ module OpenShip
 
   class OpenShip::Shipment
 
+    @@fitness_values = []
 
-    attr_accessor :boxes_to_stores, :cartons_to_stores
 
-    def initialize()
+    attr_accessor :boxes_to_stores, :cartons_to_stores, :logger, :carton_dispenser
+
+    class CartonDispenser
+
+      def get_carton
+        cart = OpenShip::Carton.new
+        cart.width = 20
+        cart.height = 20
+        cart.length = 10
+        cart
+      end
+
+    end
+
+    def initialize(opts = {})
+      if opts[:logger]
+        @logger = opts[:logger]
+      else
+        @logger = Logger.new(STDOUT)
+        @logger.level = Logger::WARN
+      end
+      if opts[:carton_dispenser]
+        @carton_dispenser = opts[:carton_dispenser]
+      else
+        @carton_dispenser = CartonDispenser.new
+      end
       @cartons_to_stores = nil
       @boxes_to_stores = {}
+    end
+
+    def calculate_cartons
+      @cartons_to_stores = {}
+      self.boxes_to_stores.each { |k, v|
+        @cartons_to_stores[k] ||= []
+        cart = @carton_dispenser.get_carton
+        @cartons_to_stores[k] << cart
+        v.each { |box|
+          pos = cart.add_box(box)
+          if pos.nil?
+            cart = @carton_dispenser.get_carton
+            @cartons_to_stores[k] << cart
+            pos = cart.add_box(box)
+            if pos.nil?
+              raise "Box is too big for carton."
+            end
+          end
+        }
+      }
+      @cartons_to_stores
     end
 
     def fitness
 
       if @cartons_to_stores.nil?
-        @cartons_to_stores = {}
-        self.boxes_to_stores.each { |k, v|
-          @cartons_to_stores[k] ||= []
-          cart = OpenShip::Carton.new
-          puts "New Box"
-          cart.width = 20
-          cart.height = 20
-          cart.length = 10
-          @cartons_to_stores[k] << cart
-          v.each { |box|
-            pos = cart.add_box(box)
-            if pos.nil?
-              cart = OpenShip::Carton.new
-              puts "New Box"
-              cart.width = 20
-              cart.height = 20
-              cart.length = 10
-              @cartons_to_stores[k] << cart
-              pos = cart.add_box(box)
-              if pos.nil?
-                raise "Box is too big for carton."
-              end
-            end
-          }
-        }
+        self.calculate_cartons
       end
 
-      #total_volume = 0
-      #self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_volume += cart.volume }
-
-      #total_free = 0
-      #self.cartons_to_stores.collect { |k, v| v }.flatten.each { |cart| total_free += cart.free_space }
-      #puts "Fitness: " + (total_volume / (total_free + 0.001)).to_s
-      #(total_volume / (total_free + 0.001))
       free_space = self.cartons_to_stores.sum { |k, v| v.sum { |c| c.free_space } }
       box_count = self.boxes_to_stores.sum { |k, v| v.count }
       carton_count = self.cartons_to_stores.sum { |k, v| v.count }
-      puts "Box Count: " + box_count.to_s
-      puts "Carton Free Space: " + free_space.to_s
-      puts "Carton Count: " + carton_count.to_s
-      fitness = (box_count.to_f / carton_count.to_f) / free_space.to_f
-      puts "Fitness " + fitness.to_s
+      @logger.debug "Box Count: " + box_count.to_s
+      @logger.debug "Carton Free Space: " + free_space.to_s
+      @logger.debug "Carton Count: " + carton_count.to_s
+      fitness = (box_count.to_f / carton_count.to_f)
+      @@fitness_values << fitness
+      @logger.debug "Fitness Mean: " + fitness_mean.to_s
+      @logger.debug "Fitness: " + fitness.to_s
       fitness
     end
 
@@ -212,8 +229,49 @@ module OpenShip
       return1
     end
 
+    def fitness_mean
+      (@@fitness_values.sum { |f| f } / @@fitness_values.length)
+    end
+
     def mutate
+      #if (self.fitness < self.fitness_mean)
+        @logger.debug "################ Making a mutation!"
+        self.boxes_to_stores.each { |k, v|
+          self.boxes_to_stores[k] = v.shuffle
+        }
+      #end
       self
+    end
+
+    def run_ga(generations = 10, population_size = 10)
+      @@fitness_values = []
+
+      population = []
+      population_size.times {
+        #ship = OpenShip::Shipment.new(:logger => @logger, :carton_dispenser => @carton_dispenser)
+        ship = self.clone
+        ship.boxes_to_stores = self.boxes_to_stores.clone
+
+        ship.boxes_to_stores.each { |k, v|
+          ship.boxes_to_stores[k] = v.shuffle
+        }
+        population << ship
+      }
+      ga = GeneticAlgorithm.new(population, {:logger => @logger})
+      generations.times { ga.evolve }
+      best_fit = ga.best_fit[0]
+      best_fit.cartons_to_stores.each { |k, v|
+        puts k
+        v.each { |cart|
+          @logger.debug "Carton"
+          cart.box_positions.each { |bp|
+            @logger.debug "length: " + bp.box.length.to_s + " width: " + bp.box.width.to_s + " height: " + bp.box.height.to_s
+            @logger.debug "x: " + bp.position.x.to_s + " y: " + bp.position.y.to_s + " z: " + bp.position.z.to_s
+          }
+        }
+      }
+      best_fit.fitness
+      best_fit
     end
 
   end

@@ -54,6 +54,11 @@ require 'spec_helper'
         @big_box.length = 100
         @big_box.height = 30
 
+        @lamp = OpenShip::Box.new
+        @lamp.width = 10
+        @lamp.length = 8
+        @lamp.height = 6
+
       end
 
       it "should be able to return its space in square units" do
@@ -107,7 +112,7 @@ require 'spec_helper'
         population = []
         boxes_to_stores = {}
         i = 0
-        2.times {
+        4.times {
           boxes_to_stores[i.to_s] = []
           20.times {
             box = OpenShip::Box.new
@@ -118,29 +123,10 @@ require 'spec_helper'
           }
           i += 1
         }
-        10.times {
-          ship = OpenShip::Shipment.new
+        ship = OpenShip::Shipment.new(:logger => log)
+        ship.boxes_to_stores = boxes_to_stores
+        best_fit = ship.run_ga(5, 10)
 
-          ship.boxes_to_stores = boxes_to_stores.clone
-
-          ship.boxes_to_stores.each { |k, v|
-            ship.boxes_to_stores[k] = v.shuffle
-          }
-          population << ship
-        }
-        ga = GeneticAlgorithm.new(population, {:logger => log})
-        10.times {  ga.evolve }
-        best_fit = ga.best_fit[0]
-        best_fit.cartons_to_stores.each { |k, v|
-          puts k
-          v.each { |cart|
-            puts "Carton"
-            cart.box_positions.each { |bp|
-              puts "length: " + bp.box.length.to_s + " width: " + bp.box.width.to_s + " height: " + bp.box.height.to_s
-              puts "x: " + bp.position.x.to_s + " y: " + bp.position.y.to_s + " z: " + bp.position.z.to_s
-            }
-          }
-        }
         best_fit.cartons_to_stores.each { |k, v|
           puts "Test"
           v.each { |carton|
