@@ -20,7 +20,7 @@ module OpenShip
   end
 
   class Box
-    attr_accessor :length, :width, :height, :label, :product_quantity
+    attr_accessor :length, :width, :height, :label, :weight, :product_quantity
 
     def volume
       (length * width * height)
