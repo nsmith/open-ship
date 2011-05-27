@@ -46,7 +46,11 @@ module OpenShip
         sequence[11], sequence[13], sequence[15]]
       number2 = array2.inject(:+)
       number3 = number1 + number2
-      check_digit = (10 - (number3 % 10)).to_s
+      check_digit = (10 - (number3 % 10))
+      if check_digit == 10
+        check_digit = 0
+      end
+      check_digit.to_s
     end
 
     def self.generate_sscc_id(serial_reference)
