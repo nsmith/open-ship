@@ -3,16 +3,13 @@ module OpenShip
   class Sscc
 
     @company_prefix
-    @extension_digit = "1"
+    @extension_digit = "0"
 
     def self.company_prefix
       @company_prefix
     end
 
     def self.company_prefix=(prefix)
-      if !prefix.start_with? "0"
-        raise "Company prefix should have a leading zero."
-      end
       @company_prefix=prefix
     end
 

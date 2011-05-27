@@ -112,9 +112,9 @@ require 'spec_helper'
         population = []
         boxes_to_stores = {}
         i = 0
-        4.times {
+        2.times {
           boxes_to_stores[i.to_s] = []
-          20.times {
+          10.times {
             box = OpenShip::Box.new
             box.length = ((rand * 9) + 1).to_i
             box.width = ((rand * 19) + 1).to_i
@@ -125,7 +125,7 @@ require 'spec_helper'
         }
         ship = OpenShip::Shipment.new(:logger => log)
         ship.boxes_to_stores = boxes_to_stores
-        best_fit = ship.run_ga(5, 10)
+        best_fit = ship.run_ga(3, 3)
 
         best_fit.cartons_to_stores.each { |k, v|
           puts "Test"

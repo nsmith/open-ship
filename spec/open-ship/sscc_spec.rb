@@ -3,8 +3,8 @@ require 'spec_helper'
 describe OpenShip::Sscc do 
 
   it "Should persist a company prefix on the model" do
-    OpenShip::Sscc.company_prefix = "0801234"
-    OpenShip::Sscc.company_prefix.should == "0801234"
+    OpenShip::Sscc.company_prefix = "8012345"
+    OpenShip::Sscc.company_prefix.should == "8012345"
   end
 
   it "should generate a valid check digit for a given sscc id" do
@@ -23,7 +23,7 @@ describe OpenShip::Sscc do
     serial_reference = "192837465"
     OpenShip::Sscc.company_prefix = company_prefix
     sscc = OpenShip::Sscc.generate_sscc_id(serial_reference)
-    sscc.should == "106141411928374657"
+    sscc.should == "006141411928374650"
   end
 
   it "should fill in leading zeros in serial_reference if serial_reference + company_prefix + extension_digit adds up to less than 17" do
