@@ -47,7 +47,7 @@ module OpenShip
             end
             indent(10) do
               move_down 5
-              self.font_size = 12
+              self.font_size = 8
               text cl.to1
               text cl.to2
               text cl.to3
