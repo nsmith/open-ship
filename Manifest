@@ -9,6 +9,7 @@ lib/open-ship/gga4r/array_helper.rb
 lib/open-ship/gga4r/gga4r_main.rb
 lib/open-ship/gga4r/version.rb
 lib/open-ship/label.rb
+lib/open-ship/label/big_carton_label.rb
 lib/open-ship/label/carton_label.rb
 lib/open-ship/label/text_label.rb
 lib/open-ship/sortr.rb

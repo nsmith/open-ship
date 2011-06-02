@@ -9,5 +9,6 @@ require 'open-ship/sortr'
 require 'open-ship/label'
 require 'open-ship/label/carton_label'
 require 'open-ship/label/text_label'
+require 'open-ship/label/big_carton_label'
 require 'open-ship/gga4r'
 
