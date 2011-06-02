@@ -50,7 +50,8 @@ module OpenShip
       check_digit.to_s
     end
 
-    def self.generate_sscc_id(serial_reference)
+    def self.generate_sscc_id(serial_reference, opts = {})
+      include_prefix = opts[:include_prefix]||false
       if company_prefix.nil?
         raise "Company prefix cannot be nil. Set with OpenShip::Sscc.company_prefix"
       end
@@ -59,7 +60,12 @@ module OpenShip
       end
       sequence = @extension_digit + @company_prefix + serial_reference
       check_digit = self.generate_check_digit(sequence)
-      sscc = sequence + check_digit
+      if !include_prefix
+        sscc = sequence + check_digit
+      else
+        sscc = ("00" + sequence + check_digit)
+      end
+      sscc
     end
 
     

@@ -110,11 +110,43 @@ module OpenShip
 
           # Field E
           bounding_box [0.in,4.6.in], :width => 4.in, :height => 1.in do
+            indent(100) do
+              move_down 20
+              self.font_size = 12
+              text "PO Number: #{cl.po_number}"
+              if cl.vendor_number
+                text  ("Vendor Number: " + cl.vendor_number.to_s)
+              end
+            end
+
+            barcode = Barby::Code128A.new(cl.po_number)
+
+            barcode.annotate_pdf(self, {:x => 10, :y => 20, :xdim => 0.010.in, :height => 0.5.in})
+
             stroke_bounds
           end
 
           # Field F
           bounding_box [0.in,3.6.in], :width => 4.in, :height => 1.in do
+
+            indent(10) do
+              move_down 10
+              self.font_size = 12
+              if cl.quantity
+                text "QTY: #{cl.quantity}"
+              end
+              if cl.upc
+                text "UPC: #{cl.upc}"
+                barcode = Barby::Code128A.new(cl.upc)
+
+                barcode.annotate_pdf(self, {:x => 130, :y => 20, :xdim => 0.010.in, :height => 0.5.in})
+
+              end
+              if cl.style
+                text "Description: #{cl.style}"
+              end
+            end
+
             stroke_bounds
           end
 
@@ -125,11 +157,41 @@ module OpenShip
 
           # Field H
           bounding_box [2.5.in,2.6.in], :width => 1.5.in, :height => 1.in do
+
+            indent(5) do
+              move_down 5
+              self.font_size = 12
+              text "STORE:"
+            end
+            indent(10) do
+              move_down 10
+              self.font_size = 16
+              text(("<b>" + cl.store_number.to_s + "</b>"), :inline_format => true)
+            end
+
+
             stroke_bounds
           end
 
           # Field I
           bounding_box [0.in,1.6.in], :width => 4.in, :height => 1.6.in do
+
+            indent(5) do
+              move_down(5)
+              self.font_size = 10
+              text "SSCC-18"
+            end
+            
+            indent(60) do
+              move_down 5
+              self.font_size = 12
+              text ("(00) " + cl.sscc)
+            end
+
+            barcode = Barby::GS1128.new(cl.sscc, "A", "00")
+
+            barcode.annotate_pdf(self, {:x => 40, :y => 5, :xdim => 0.010.in, :height => 1.in})
+
             stroke_bounds
           end
 

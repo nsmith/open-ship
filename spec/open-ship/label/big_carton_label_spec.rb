@@ -13,11 +13,16 @@ describe OpenShip::Label::CartonLabel do
     cl.tracking = "TBD"
     cl.scac = "FDE"
     cl.zip = "956502222"
+    cl.po_number = "GL32454"
+    cl.vendor_number = "236622"
     cl.upc = "814434010944"
     cl.product = "cordlets"
     cl.style = "charcoal"
     cl.sku = "CDL-1-4CH"
     cl.quantity = 6
+    cl.store_number = "2222"
+    OpenShip::Sscc.company_prefix = "8144301"
+    cl.sscc = OpenShip::Sscc.generate_sscc_id("1234", :include_prefix => false)
     doc = OpenShip::Label::BigCartonLabel.to_pdf(cl, "tmp/test_big_carton_label.pdf")
     doc.class.should == File
   end
