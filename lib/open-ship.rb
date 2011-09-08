@@ -11,5 +11,6 @@ require 'open-ship/label/carton_label'
 require 'open-ship/label/text_label'
 require 'open-ship/label/big_carton_label'
 require 'open-ship/label/cinmar_label'
+require 'open-ship/label/bn_product_label'
 require 'open-ship/gga4r'
 
