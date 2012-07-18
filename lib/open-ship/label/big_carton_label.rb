@@ -96,10 +96,10 @@ module OpenShip
 
             indent(10) do
               self.font_size = 12
-              text the_zip
+              text the_zip.gsub(/^420/, "(420) ")
             end
 
-            barcode = Barby::Code128A.new(the_zip)
+            barcode = Barby::Code128C.new(the_zip)
 
             barcode.annotate_pdf(self, {:x => 10, :y => 5, :xdim => 0.010.in, :height => 0.5.in})
 
@@ -137,12 +137,13 @@ module OpenShip
               end
               if cl.upc
                 text "UPC: #{cl.upc}"
-                barcode = Barby::Code128A.new(cl.upc)
+                barcode = Barby::Code128C.new(cl.upc)
 
                 barcode.annotate_pdf(self, {:x => 130, :y => 20, :xdim => 0.010.in, :height => 0.5.in})
 
               end
               if cl.style
+                self.font_size = 10
                 text "Description: #{cl.style}"
               end
             end
@@ -188,9 +189,9 @@ module OpenShip
               text ("(00) " + cl.sscc)
             end
 
-            barcode = Barby::GS1128.new(cl.sscc, "A", "00")
+            barcode = Barby::Code128C.new("00" + cl.sscc)
 
-            barcode.annotate_pdf(self, {:x => 40, :y => 5, :xdim => 0.010.in, :height => 1.in})
+            barcode.annotate_pdf(self, {:x => 65, :y => 5, :xdim => 0.013.in, :height => 1.in})
 
             stroke_bounds
           end

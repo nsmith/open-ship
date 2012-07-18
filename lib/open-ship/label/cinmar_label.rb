@@ -67,7 +67,7 @@ module OpenShip
 
             indent(10) do
               move_down 5
-              self.font_size = 10
+              self.font_size = 12
               if cl.bol
                 text "B/L: #{cl.bol}"
               end
@@ -153,7 +153,6 @@ module OpenShip
             indent(5) do
               move_down(5)
               self.font_size = 10
-              text "SSCC-18"
             end
             
             indent(60) do

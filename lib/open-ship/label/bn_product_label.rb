@@ -52,10 +52,8 @@ module OpenShip
               upc_barcode.annotate_pdf(self, {:x => 3.0.in, :y => 1.4.in, :xdim => 0.015.in, :height => 0.75.in})
               text_box ("(3401) " + weight_string), :size => 12, :at => [3.0.in, 1.35.in], :width => 2.in, :height => 0.16.in
 
-              text_box ("UNIT PRICE: " + cl.price.round(2).to_s + " USD"), :size => 12, :at => [3.0.in, 1.11.in], :width => 2.in, :height => 0.16.in
-              price_string = (cl.price.to_f.round(2).to_s.gsub(".", "") + "USD")
-              price_string = "1299USD"
-              puts price_string
+              text_box ("UNIT PRICE: " + ("%.2f" % cl.price.round(2)) + " USD"), :size => 12, :at => [3.0.in, 1.11.in], :width => 2.in, :height => 0.16.in
+              price_string = (("%.2f" % cl.price.to_f.round(2)).gsub(".", "") + "USD")
               upc_barcode = Barby::GS1128.new(price_string, "A", "9012Q")
               upc_barcode.annotate_pdf(self, {:x => 3.0.in, :y => 0.2.in, :xdim => 0.015.in, :height => 0.75.in})
               text_box ("(9012Q) " + price_string), :size => 12, :at => [3.0.in, 0.18.in], :width => 2.in, :height => 0.16.in
@@ -78,6 +76,8 @@ module OpenShip
         unless upc12.class <= String
           raise "Can only check string sequences."
         end
+        puts upc12
+        puts upc12.length
         unless upc12.length == 12
           raise "UPC 12 must be 12 characters long"
         end

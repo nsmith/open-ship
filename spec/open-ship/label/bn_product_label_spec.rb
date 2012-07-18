@@ -7,10 +7,10 @@ describe OpenShip::Label::BnProductLabel do
     cl.vendor = "Acme Co"
     cl.origin = "China"
     cl.product = "cordlets"
-    cl.upc = "814434010715"
-    cl.weight = 4.0
-    cl.quantity = 6
-    cl.price = 2.99
+    cl.upc = "614141005437"
+    cl.weight = 14.0
+    cl.quantity = 30
+    cl.price = 15.95
     doc = OpenShip::Label::BnProductLabel.to_pdf(cl, "tmp/test_bn_product_label.pdf")
     doc.class.should == File
   end
